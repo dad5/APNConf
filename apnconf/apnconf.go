@@ -61,6 +61,14 @@ func getAPN(r *http.Request) []APN {
 
 // Home
 func home(w http.ResponseWriter, r *http.Request) {
+	// Check if we are on the root page, and if not return a 404
+	if r.URL.Path != "/" {
+		w.WriteHeader(http.StatusNotFound)
+		passedTemplate := new(bytes.Buffer)
+		template.Must(template.ParseFiles("templates/404.html")).Execute(passedTemplate, nil)
+		render.Render(w, r, passedTemplate, http.StatusNotFound)
+		return
+	}
 	passedTemplate := new(bytes.Buffer)
 	template.Must(template.ParseFiles("apnconf/templates/home.html")).Execute(passedTemplate, getAPN(r))
 	render.Render(w, r, passedTemplate)
