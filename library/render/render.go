@@ -2,6 +2,7 @@
 package render
 
 import (
+	"appengine"
 	"bytes"
 	"fmt"
 	"net/http"
@@ -12,20 +13,26 @@ import (
  * Renders a template (passedTemplate) and inserts the header and footer
  */
 func Render(w http.ResponseWriter, r *http.Request, passedTemplate *bytes.Buffer, Statuscode ...int) {
-	// Add some HTTP Headers
-	w.Header().Set("X-Frame-Options", "DENY")           // Deny frames
-	w.Header().Set("X-XSS-Protection", "1; mode=block") // XSS Protection
-	w.Header().Set("X-Content-Type-Options", "nosniff") // Disable sniffing
-	if len(Statuscode) == 1 {
-		w.WriteHeader(Statuscode[0])
+	// Check if we are on "apn.statuscode.ch"
+	if r.URL.Host == "apn.statuscode.ch" || appengine.IsDevAppServer() == true {
+		// Add some HTTP Headers
+		w.Header().Set("X-Frame-Options", "DENY")           // Deny frames
+		w.Header().Set("X-XSS-Protection", "1; mode=block") // XSS Protection
+		w.Header().Set("X-Content-Type-Options", "nosniff") // Disable sniffing
+		if len(Statuscode) == 1 {
+			w.WriteHeader(Statuscode[0])
+		}
+
+		// Header
+		template.Must(template.ParseFiles("templates/header.html")).Execute(w, nil)
+
+		// Now add the passedTemplate
+		fmt.Fprintf(w, "%s", string(passedTemplate.Bytes())) // %s = the uninterpreted bytes of the string or slice
+
+		// And now we execute the footer
+		template.Must(template.ParseFiles("templates/footer.html")).Execute(w, nil)
+	} else {
+		// No, let's redirect the user to www.statuscode.ch
+		http.Redirect(w, r, "https://apn.statuscode.ch/", http.StatusMovedPermanently)
 	}
-
-	// Header
-	template.Must(template.ParseFiles("templates/header.html")).Execute(w, nil)
-
-	// Now add the passedTemplate
-	fmt.Fprintf(w, "%s", string(passedTemplate.Bytes())) // %s = the uninterpreted bytes of the string or slice
-
-	// And now we execute the footer
-	template.Must(template.ParseFiles("templates/footer.html")).Execute(w, nil)
 }
