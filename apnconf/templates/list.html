@@ -1,0 +1,83 @@
+<h1>APNConf</h1>
+<p>This is the full list of all APN - consider using the <a href="/">search</a>!</p>
+
+{{range .}}
+<table class="table table-bordered table-striped">
+	<thead>
+		<tr>
+			<th>{{.Carrier}}</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>
+				<code>APN</code>
+			</td>
+			<td>
+				{{.APN}}
+			</td>
+		</tr>
+		{{if .MMSC}}
+		<tr>
+			<td>
+				<code>MMSC</code>
+			</td>
+			<td>
+				{{.MMSC}}
+			</td>
+		</tr>
+		{{end}}
+		{{if .MMSProxy}}
+		<tr>
+			<td>
+				<code>MMS-Proxy</code>
+			</td>
+			<td>
+				{{.MMSProxy}}
+			</td>
+		</tr>
+		{{end}}
+		{{if .MMSPort}}
+		<tr>
+			<td>
+				<code>MMS-Port</code>
+			</td>
+			<td>
+				{{.MMSPort}}
+			</td>
+		</tr>
+		{{end}}
+		{{if .User}}
+		<tr>
+			<td>
+				<code>User</code>
+			</td>
+			<td>
+				{{.User}}
+			</td>
+		</tr>
+		{{end}}
+		{{if .Password}}
+		<tr>
+			<td>
+				<code>Password</code>
+			</td>
+			<td>
+				{{.Password}}
+			</td>
+		</tr>
+		{{end}}
+		{{if .Proxy}}
+		<tr>
+			<td>
+				<code>Proxy</code>
+			</td>
+			<td>
+				{{.Proxy}}
+			</td>
+		</tr>
+		{{end}}
+	</tbody>
+</table>
+<hr class="soften"/>{{end}}
+
