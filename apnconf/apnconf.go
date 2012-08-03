@@ -2,12 +2,12 @@ package app
 
 import (
 	"bytes"
+	"encoding/gob"
 	"encoding/xml"
 	"html/template"
-	"library/cache"
 	"io/ioutil"
+	"library/cache"
 	"library/render"
-	"encoding/gob"
 	"net/http"
 )
 
@@ -26,16 +26,16 @@ type APN struct {
 	MMSC     string `xml:"mmsc,attr"`
 	MMSProxy string `xml:"mmsproxy,attr"`
 	MMSPort  string `xml:"mmsport,attr"`
-	MCC		string `xml:"mcc,attr"`
-	MNC  string `xml:"mnc,attr"`
+	MCC      string `xml:"mcc,attr"`
+	MNC      string `xml:"mnc,attr"`
 }
 type APNStruct struct {
 	APN []APN `xml:"apn"`
 }
 
 // Function to get all APN
-func getAPN (r *http.Request)  []APN {
-// Check if we have the item in the cache
+func getAPN(r *http.Request) []APN {
+	// Check if we have the item in the cache
 	cachedItem, cacheStatus := cache.GetCache(r, "getAPN")
 	if cacheStatus == true {
 		var apn []APNStruct
