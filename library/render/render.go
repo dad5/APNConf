@@ -15,10 +15,6 @@ import (
 func Render(w http.ResponseWriter, r *http.Request, passedTemplate *bytes.Buffer, Statuscode ...int) {
 	// Check if we are on "apn.statuscode.ch"
 	if r.URL.Host == "apn.statuscode.ch" || appengine.IsDevAppServer() == true {
-		// Add some HTTP Headers
-		w.Header().Set("X-Frame-Options", "DENY")           // Deny frames
-		w.Header().Set("X-XSS-Protection", "1; mode=block") // XSS Protection
-		w.Header().Set("X-Content-Type-Options", "nosniff") // Disable sniffing
 		if len(Statuscode) == 1 {
 			w.WriteHeader(Statuscode[0])
 		}
