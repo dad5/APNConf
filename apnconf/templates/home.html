@@ -1,5 +1,5 @@
 <h1>APNConf</h1>
 <p>Ever needed an APN configuration? - Now you don't need to hassle anymore.</p>
-<form class="form-search" method="GET">
+<form class="form-search" action="/search/" method="POST">
 	<input type="text" id="APN"  class="input-xlarge search-query"  style="width:100%;" name="APN" placeholder="APN-Name..." data-provide="typeahead" data-items="10" data-source='[{{range .}}"{{.Carrier}}",{{end}}""]'>
 </form> 
