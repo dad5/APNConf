@@ -17,6 +17,26 @@
 				{{.APN}}
 			</td>
 		</tr>
+		{{if .MCC}}
+		<tr>
+			<td>
+				<code>MCC</code>
+			</td>
+			<td>
+				{{.MCC}}
+			</td>
+		</tr>
+		{{end}}
+		{{if .MNC}}
+		<tr>
+			<td>
+				<code>MNC</code>
+			</td>
+			<td>
+				{{.MNC}}
+			</td>
+		</tr>
+		{{end}}
 		{{if .MMSC}}
 		<tr>
 			<td>
