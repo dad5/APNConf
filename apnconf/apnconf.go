@@ -63,15 +63,14 @@ func getAllAPN(r *http.Request) []APN {
 }
 
 // Function to get a single APN
-func getAPN(r *http.Request, MCC string, MNC string) []APN {
+func getAPN(r *http.Request, MCC string, MNC string) (apn []APN, exists bool) {
 	// Check if we have the item in the cache
 	cachedItem, cacheStatus := cache.GetCache(r, "getAPN-"+MCC+"-"+MNC)
 	if cacheStatus == true {
-		var apn []APN
 		pAPN := bytes.NewBuffer(cachedItem)
 		decAPN := gob.NewDecoder(pAPN)
 		decAPN.Decode(&apn)
-		return apn
+		return apn, true
 	}
 
 	// Read out 
@@ -82,7 +81,13 @@ func getAPN(r *http.Request, MCC string, MNC string) []APN {
 			i++
 		}
 	}
-	apn := make([]APN, i)
+
+	// Counter is zero, it don't exists
+	if i == 0 {
+		return nil, false
+	}
+
+	apn = make([]APN, i)
 	i = 0
 	for key := range data {
 		if data[key].MCC == MCC && data[key].MNC == MNC {
@@ -97,7 +102,7 @@ func getAPN(r *http.Request, MCC string, MNC string) []APN {
 	encModels.Encode(apn)
 	cache.AddCache(r, "getAPN-"+MCC+"-"+MNC, mModels.Bytes())
 
-	return apn
+	return apn, true
 }
 
 // Home
@@ -154,7 +159,16 @@ func show(w http.ResponseWriter, r *http.Request) {
 
 	MCC := strings.Replace(split[0], "-", "", 1)
 	MNC := split[1]
-	data := getAPN(r, MCC, MNC)
+	data, exists := getAPN(r, MCC, MNC)
+
+	// MMC don't exists
+	if !exists {
+		w.WriteHeader(http.StatusNotFound)
+		passedTemplate := new(bytes.Buffer)
+		template.Must(template.ParseFiles("templates/404.html")).Execute(passedTemplate, nil)
+		render.Render(w, r, passedTemplate, http.StatusNotFound)
+		return
+	}
 
 	passedTemplate := new(bytes.Buffer)
 	template.Must(template.ParseFiles("apnconf/templates/show.html")).Execute(passedTemplate, data)
