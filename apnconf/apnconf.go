@@ -129,6 +129,8 @@ func search(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
+
+	// Do a search
 	data := getAllAPN(r)
 	for key := range data {
 		if data[key].Carrier == r.FormValue("APN") {
@@ -136,6 +138,12 @@ func search(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
+	// Nothing found :-(
+	passedTemplate := new(bytes.Buffer)
+	template.Must(template.ParseFiles("templates/404.html")).Execute(passedTemplate, nil)
+	render.Render(w, r, passedTemplate, http.StatusNotFound)
+
 }
 
 // Shows a single APN
